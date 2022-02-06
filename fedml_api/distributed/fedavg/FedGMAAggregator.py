@@ -96,7 +96,6 @@ class FedAVGAggregator(object):
             mean_signs = torch.mean(sign,dim=0)
             abs_mean_signs = torch.abs(mean_signs)
             abs_mean_signs[abs_mean_signs>=tau] = 1
-            torch.sum(diff_params[key]*abs_mean_signs, dim=0)
             averaged_params[k] = param_init[k] + torch.sum(diff_params[key]*abs_mean_signs, dim=0)
 
         # update the global model which is cached at the server side
