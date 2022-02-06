@@ -10,7 +10,7 @@ import wandb
 from .utils import transform_list_to_tensor
 
 
-class FedAVGAggregator(object):
+class FedGMAAggregator(object):
 
     def __init__(self, train_global, test_global, all_train_data_num,
                  train_data_local_dict, test_data_local_dict, train_data_local_num_dict, worker_num, device,
@@ -60,6 +60,7 @@ class FedAVGAggregator(object):
         start_time = time.time()
         model_list = []
         training_num = 0
+        diff_params = {}
 
         for idx in range(self.worker_num):
             if self.args.is_mobile == 1:
@@ -86,17 +87,17 @@ class FedAVGAggregator(object):
             w = local_sample_number / training_num
             for k in averaged_params.keys():
                 if i == 0:
-                   diff_params[k] = (local_model_params[k]-param_init[k]) * w
+                   diff_params[k] = [(local_model_params[k]-param_init[k]) * w]
                 else:
-                    diff_params[k] += (local_model_params[k]-param_init[k]) * w
+                    diff_params[k] += [(local_model_params[k]-param_init[k]) * w]
         tau = 0.3   #Hyperparameter     
-        for k in averaged_params.keys():
+        for key in averaged_params.keys():
             diff_params[key] = torch.stack(diff_params[key])
             sign = torch.sign(diff_params[key])
             mean_signs = torch.mean(sign,dim=0)
             abs_mean_signs = torch.abs(mean_signs)
             abs_mean_signs[abs_mean_signs>=tau] = 1
-            averaged_params[k] = param_init[k] + torch.sum(diff_params[key]*abs_mean_signs, dim=0)
+            averaged_params[key] = param_init[key] + torch.sum(diff_params[key]*abs_mean_signs, dim=0)
 
         # update the global model which is cached at the server side
         self.set_global_model_params(averaged_params)

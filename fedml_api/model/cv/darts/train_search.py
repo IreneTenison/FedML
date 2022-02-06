@@ -84,7 +84,7 @@ def main():
             name="r" + str(args.run_id) + "-e" + str(args.epochs) + "-lr" + str(args.learning_rate) + "-l(" +
                  str(args.lambda_train_regularizer) + "," + str(args.lambda_valid_regularizer) + ")",
             config=args,
-            entity="automl"
+            entity="flnlp"
         )
 
     global is_multi_gpu
