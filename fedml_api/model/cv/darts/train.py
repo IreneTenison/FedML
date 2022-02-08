@@ -60,7 +60,7 @@ def main():
         project="automl-gradient-based-nas",
         name=str(args.arch) + "-lr" + str(args.learning_rate),
         config=args,
-        entity="automl"
+        entity="flnlp"
     )
     wandb.config.update(args)  # adds all of the arguments as config variables
 
